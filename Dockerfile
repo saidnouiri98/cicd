@@ -2,7 +2,7 @@
 FROM php:apache
 
 # Ajouter le fichier index.html dans le répertoire web
-COPY index.html /var/www/html/index.html
+COPY index.php /var/www/html/index.html
 
 # Exposer le port 80 pour le serveur web
 EXPOSE 80
