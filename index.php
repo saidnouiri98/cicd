@@ -79,7 +79,7 @@
     </style>
 </head>
 <body>
-<h1>TEST2</h1>
+<h1>TEST3</h1>
 <h2>Formulaire d'insertion</h2>
 
 <form method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
