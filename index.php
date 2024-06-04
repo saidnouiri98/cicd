@@ -99,8 +99,8 @@ $username = "root"; // MySQL username
 $password = "rootroot"; // MySQL password
 $database = "test"; // Nom de la base de données
 
-// Vérifier si le formulaire a été soumis
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Gestion de l'insertion
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
     // Créer une connexion à la base de données
     $conn = new mysqli($servername, $username, $password, $database);
 
@@ -114,10 +114,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $prenom = $_POST["prenom"];
 
     // Requête SQL d'insertion
-    $sql = "INSERT INTO personne (nom, prenom) VALUES (?, ?)";
+    $sql_insert = "INSERT INTO personne (nom, prenom) VALUES (?, ?)";
 
     // Préparation de la requête
-    $stmt = $conn->prepare($sql);
+    $stmt = $conn->prepare($sql_insert);
 
     if ($stmt === false) {
         die("Erreur de préparation de la requête : " . $conn->error);
@@ -138,6 +138,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 }
 
+// Gestion de la suppression
+if (isset($_POST["delete"])) {
+    // Créer une connexion à la base de données
+    $conn = new mysqli($servername, $username, $password, $database);
+
+    // Vérifier la connexion
+    if ($conn->connect_error) {
+        die("Échec de la connexion à la base de données : " . $conn->connect_error);
+    }
+
+    // Récupérer l'ID de la ligne à supprimer
+    $id = $_POST["id"];
+
+    // Requête SQL de suppression
+    $sql_delete = "DELETE FROM personne WHERE id = ?";
+
+    // Préparation de la requête
+    $stmt = $conn->prepare($sql_delete);
+
+    if ($stmt === false) {
+        die("Erreur de préparation
+        de la requête de suppression : " . $conn->error);
+    }
+
+    // Liaison des paramètres
+    $stmt->bind_param("i", $id);
+
+    // Exécution de la requête
+    if ($stmt->execute() === false) {
+        die("Échec de l'exécution de la requête de suppression : " . $stmt->error);
+    }
+
+    // Message de succès
+    echo "<p>Ligne supprimée avec succès.</p>";
+
+    // Fermer la connexion
+    $stmt->close();
+
+    // Actualiser la page pour afficher les changements
+    header("Location: ".$_SERVER["PHP_SELF"]);
+    exit();
+}
+
 // Afficher le contenu de la table personne
 echo "<h2>Contenu de la table personne :</h2>";
 
@@ -150,7 +193,7 @@ if ($conn->connect_error) {
 }
 
 // Requête SQL de sélection
-$sql_select = "SELECT nom, prenom FROM personne";
+$sql_select = "SELECT id, nom, prenom FROM personne";
 
 // Exécution de la requête
 $result = $conn->query($sql_select);
@@ -159,9 +202,16 @@ $result = $conn->query($sql_select);
 if ($result->num_rows > 0) {
     // Afficher les données dans un tableau HTML
     echo "<table>";
-    echo "<tr><th>Nom</th><th>Prénom</th></tr>";
+    echo "<tr><th>Nom</th><th>Prénom</th><th>Action</th></tr>"; // Nouvelle colonne pour les actions
     while ($row = $result->fetch_assoc()) {
-        echo "<tr><td>".$row["nom"]."</td><td>".$row["prenom"]."</td></tr>";
+        echo "<tr>";
+        echo "<td>".$row["nom"]."</td>";
+        echo "<td>".$row["prenom"]."</td>";
+        echo "<td><form method='post' action='".$_SERVER["PHP_SELF"]."'>";
+        echo "<input type='hidden' name='id' value='".$row["id"]."'>"; // Ajout d'un champ caché pour stocker l'ID de la ligne
+        echo "<input type='submit' name='delete' value='Supprimer'>"; // Bouton de suppression
+        echo "</form></td>";
+        echo "</tr>";
     }
     echo "</table>";
 } else {
