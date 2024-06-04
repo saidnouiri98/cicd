@@ -177,7 +177,7 @@ if (isset($_POST["delete"])) {
     $stmt->close();
 
     // Actualiser la page pour afficher les changements
-    header("Location: ".$_SERVER["PHP_SELF"]);
+    header("Location: ".$_SERVER[""]);
     exit();
 }
 
