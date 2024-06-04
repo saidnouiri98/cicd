@@ -94,9 +94,9 @@
 
 <?php
 // Informations de connexion à la base de données MySQL
-$servername = "mysql-svc"; // Service name of MySQL
+$servername = "mysql"; // Service name of MySQL
 $username = "root"; // MySQL username
-$password = "password"; // MySQL password
+$password = "rootroot"; // MySQL password
 $database = "test"; // Nom de la base de données
 
 // Vérifier si le formulaire a été soumis

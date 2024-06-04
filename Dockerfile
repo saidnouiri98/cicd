@@ -1,7 +1,10 @@
 # Utiliser l'image officielle php:apache comme base
 FROM php:apache
 
-# Ajouter le fichier index.html dans le répertoire web
+# Installer les extensions nécessaires pour mysqli
+RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
+
+# Ajouter le fichier index.php dans le répertoire web
 COPY index.php /var/www/html/index.html
 
 # Exposer le port 80 pour le serveur web
